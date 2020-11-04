@@ -7,18 +7,19 @@
 /* strtol */
 #include <stdio.h>
 
-static int
-csort(unsigned const k,
-      unsigned const n,
-      unsigned const * const in,
-      unsigned       * const out)
-{
+/* OpenMP API */
+#include <omp.h>
+
+static int csort(unsigned const k, unsigned const n, unsigned const * const in, unsigned * const out){
   unsigned * const count = calloc(k + 1, sizeof(*count));
   if (NULL == count) {
     return -1;
   }
 
+  //parallelize this
+# pragma omp parallel for
   for (unsigned i = 0; i < n; i++) {
+    # pragma omp atomic
     count[in[i]]++;
   }
 
@@ -29,8 +30,12 @@ csort(unsigned const k,
     total += counti;
   }
 
+  //parallelize this
+# pragma omp parallel for
   for (unsigned i = 0; i < n; i++) {
+    # pragma omp critical
     out[count[in[i]]] = in[i];
+    # pragma omp atomic
     count[in[i]]++;
   }
 
@@ -39,8 +44,7 @@ csort(unsigned const k,
   return 0;
 }
 
-int
-main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) {
   /* Get array size from command line */
   unsigned n = strtol(argv[1], NULL, 10);
 
