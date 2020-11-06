@@ -16,29 +16,47 @@ static int csort(unsigned const k, unsigned const n, unsigned const * const in, 
     return -1;
   }
 
+  double ts1 = omp_get_wtime();
   //parallelize this
 # pragma omp parallel for
+
   for (unsigned i = 0; i < n; i++) {
     # pragma omp atomic
     count[in[i]]++;
   }
+  double te1 = omp_get_wtime();
+
+  printf("timer1: %lf\n", te1-ts1);
+
+
 
   unsigned total = 0;
+
+  double ts2 = omp_get_wtime();
   for (unsigned i = 0; i <= k; i++) {
     unsigned const counti = count[i];
     count[i] = total;
     total += counti;
   }
+  double te2 = omp_get_wtime();
 
+  printf("timer2: %lf\n", te2-ts2);
+
+
+double ts3 = omp_get_wtime();
   //parallelize this
 # pragma omp parallel for
   for (unsigned i = 0; i < n; i++) {
     # pragma omp critical
+    {
     out[count[in[i]]] = in[i];
-    # pragma omp atomic
     count[in[i]]++;
   }
+  }
 
+double te3 = omp_get_wtime();
+
+printf("timer3: %lf\n", te3-ts3);
   free(count);
 
   return 0;
