@@ -32,7 +32,7 @@ csort(unsigned const k,
     count[in[i] * num_threads + omp_get_thread_num()]++;
   }
   double te1 = omp_get_wtime();
-  printf("timer 1: %lf\n", te1 - ts1);
+  printf("=%lf+", te1 - ts1);
 
   double ts2 = omp_get_wtime();
   unsigned total = 0;
@@ -42,7 +42,7 @@ csort(unsigned const k,
     total += counti;
   }
   double te2 = omp_get_wtime();
-  printf("timer 2: %lf\n", te2 - ts2);
+  printf("%lf+", te2 - ts2);
 
   double ts3 = omp_get_wtime();
 # pragma omp parallel for
@@ -51,7 +51,7 @@ csort(unsigned const k,
     count[in[i] * num_threads + omp_get_thread_num()]++;
   }
   double te3 = omp_get_wtime();
-  printf("timer 3: %lf\n", te3 - ts3);
+  printf("%lf\n", te3 - ts3);
 
   free(count);
 
